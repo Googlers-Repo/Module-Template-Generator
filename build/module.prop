@@ -1,0 +1,13 @@
+# Magisk supported properties
+id=nodejs
+name=Node.js
+version=v1.0.0
+versionCode=1
+author=Der_Googler
+description=Using Node.js on mobile!
+# Fox's Mmm supported properties
+minApi=21
+maxApi=33
+minMagisk=18000
+needRamdisk=false
+changeBoot=false
