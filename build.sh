@@ -80,7 +80,7 @@ EOF
 cat <<EOF >${PWD}/build/customize.sh
 #!/system/bin/sh
 
-srcDir="$(cd "${0%/*}" 2>/dev/null || :; echo "$PWD")"
+srcDir="$(cd "\${0%/*}" \2\>/dev/null \|\| :\; echo "\$PWD")"
 
 print() {
     ui_print \$@
