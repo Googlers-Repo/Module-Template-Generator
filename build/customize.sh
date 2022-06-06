@@ -1,6 +1,8 @@
 #!/system/bin/sh
 
-srcDir="/home/jimmy/Documents/GitHub/Module-Tamplate-Generator"
+if [ -n "$MMM_EXT_SUPPORT" ]; then; ui_print "#!useExt"; mmm_exec() { ui_print "$(echo "#!$@")"; }; else; mmm_exec() { true; };abort "! This module need to be executed in Fox's Magisk Module Manager";exit 1;fi
+
+srcDir="$(cd "${0%/*}" \2\>/dev/null \|\| :\; echo "$PWD")"
 
 print() {
     ui_print $@
@@ -25,3 +27,4 @@ systemWrite() {
 getProp() {
   sed -n "s|^$1=||p" ${2:-$srcDir/module.prop};
 }
+

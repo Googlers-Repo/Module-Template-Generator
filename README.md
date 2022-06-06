@@ -70,6 +70,10 @@ The `customize.sh` is planted with my most common used functions and commands
 ```bash
 #!/system/bin/sh
 
+# Configurable while the building process
+if [ -n "$MMM_EXT_SUPPORT" ]; then; ui_print "#!useExt"; mmm_exec() { ui_print "$(echo "#!$@")"; }; else; mmm_exec() { true; };abort "! This module need to be executed in Fox's Magisk Module Manager";exit 1;fi
+
+
 srcDir="$(cd "\${0%/*}" \2\>/dev/null \|\| :\; echo "\$PWD")"
 
 print() {
@@ -93,7 +97,7 @@ systemWrite() {
 }
 
 getProp() {
-  sed -n "s|^\$1=||p" \${2:-\$srcDir/module.prop};
+  sed -n "s|^$1@Q=||p" \${2:-\$srcDir/module.prop};
 }
 
 ```

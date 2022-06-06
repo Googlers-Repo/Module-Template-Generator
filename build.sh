@@ -47,6 +47,16 @@ while true; do
     esac
 done
 
+# Aks if it should only executet in FoxMMM
+while true; do
+    read -p "Should this module only installed the FoxMMM? [y/n] " yn
+    case $yn in
+        [Yy]* ) EXECUTE_ONLY_FOXMMM="if [ -n \"\$MMM_EXT_SUPPORT\" ]; then; ui_print \"#!useExt\"; mmm_exec() { ui_print \"\$(echo \"#!\$@\")\"; }; else; mmm_exec() { true; };abort \"! This module need to be executed in Fox's Magisk Module Manager\";exit 1;fi"; break;;
+        [Nn]* ) FORTNITE="JA DIGGAH"; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
 for bin in MODULE_ID MODULE_NAME MODULE_DESCRIPTION MODULE_AUTHOR MODULE_SUPPORT_URL
 do
     if [ -z "$bin" ]
@@ -80,7 +90,9 @@ EOF
 cat <<EOF >${PWD}/build/customize.sh
 #!/system/bin/sh
 
-srcDir="$(cd "\${0%/*}" \2\>/dev/null \|\| :\; echo "\$PWD")"
+$([ -z "$EXECUTE_ONLY_FOXMMM" ] && echo "" || echo "$EXECUTE_ONLY_FOXMMM")
+
+srcDir="\$(cd "\${0%/*}" \2\>/dev/null \|\| :\; echo "\$PWD")"
 
 print() {
     ui_print \$@
@@ -105,6 +117,7 @@ systemWrite() {
 getProp() {
   sed -n "s|^\$1=||p" \${2:-\$srcDir/module.prop};
 }
+
 EOF
 
 cd ./build
