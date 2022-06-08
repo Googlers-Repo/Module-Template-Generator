@@ -1,13 +1,17 @@
-# Magisk supported properties
-id=fornite
-name=Fortnite on iOS
+# Magisk properties
+id=test
+name=test
 version=v1.0.0
 versionCode=1
-author=Der-Googler
-description=13000 V-Bucks
-# Fox's Mmm supported properties
+author=test
+description=test
+updateJson=https://test.com/api/update
+# FoxMMM properties
 minApi=21
 maxApi=33
 minMagisk=18000
 needRamdisk=false
+support=https://test.com/support
+donate=https://test.com/donate
+config=com.test.test.settings
 changeBoot=false

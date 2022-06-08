@@ -21,6 +21,7 @@ version=<string>
 versionCode=<int>
 author=<string>
 description=<string>
+updateJson=<url>
 
 # Fox's Mmm supported properties
 minApi=<int>
