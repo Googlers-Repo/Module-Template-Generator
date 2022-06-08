@@ -8,7 +8,7 @@ if ! command -v zip > /dev/null;then
 fi
 
 function color() {
-    echo -e $1
+    echo -e $@
 }
 
 # Magisk props
