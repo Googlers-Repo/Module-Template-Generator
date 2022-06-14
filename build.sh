@@ -51,10 +51,10 @@ done
 
 # Aks if it should only executet in FoxMMM
 while true; do
-    read -p "Should this module $(color "\e[33monly\e[0m") installed via the FoxMMM? $(color "[\e[34my\e[0m/\e[34mn\e[0m]") " yn
+    read -p "$(color "Should this module \e[33monly\e[0m installed via the FoxMMM? \e[38;5;82m(Includes the Fox Library V1 Script)\e[0m [\e[34my\e[0m/\e[34mn\e[0m]")" yn
     case $yn in
-        [Yy]* ) EXECUTE_ONLY_FOXMMM="if [ -n \"\$MMM_EXT_SUPPORT\" ]; then; ui_print \"#!useExt\"; mmm_exec() { ui_print \"\$(echo \"#!\$@\")\"; }; else; mmm_exec() { true; };abort \"! This module need to be executed in Fox's Magisk Module Manager\";exit 1;fi"; break;;
-        [Nn]* ) FORTNITE="JA DIGGAH"; break;;
+        [Yy]* ) FOX_MODULE_LIBRARY="true"; break;;
+        [Nn]* ) FOX_MODULE_LIBRARY="false"; break;;
         * ) echo "Please answer $(color "\e[34myes\e[0m or \e[34mno\e[0m").";;
     esac
 done
@@ -90,10 +90,154 @@ $([ -z "$MODULE_CONFIG" ] && echo "" || echo "config=$MODULE_CONFIG")
 changeBoot=${FOXMMM_CHANGE_BOOT}
 EOF
 
+if [ "$FOX_MODULE_LIBRARY" == "true" ]; then
+cat <<EOF >${PWD}/build/META-INF/com/google/android/update-binary
+#!/sbin/sh
+
+#################
+# Initialization
+#################
+
+umask 022
+
+# echo before loading util_functions
+ui_print() { echo "\$1"; }
+
+require_new_magisk() {
+    ui_print "*******************************"
+    ui_print " Please install Magisk v20.4+! "
+    ui_print "*******************************"
+    exit 1
+}
+
+#########################
+# Fox Library V1 Script
+#########################
+
+if [ -n "\$FOX_MODULE_LIBRARY" ]; then
+    if [ -n "\$MMM_EXT_SUPPORT" ]; then
+        ui_print "#!useExt"
+        mmm_exec() {
+            ui_print "$(echo "#!\$@")"
+        }
+        print() {
+            mmm_exec "addLine \$@"
+        }
+        reprint() { mmm_exec "setLastLine \$@"; }
+        clear() { mmm_exec "clearTerminal"; }
+    else
+        mmm_exec() { true; }
+        print() {
+            ui_print "$(echo "\$@")"
+        }
+        reprint() { true; }
+        clear() { true; }
+    fi
+    showLoading() { mmm_exec "showLoading \$@"; }
+    hideLoading() { mmm_exec "hideLoading"; }
+    setLoading() { mmm_exec "setLoading \$@"; }
+    
+    fox_copy_function() {
+        local ORIG_FUNC=$(declare -f \$1)
+        local NEWNAME_FUNC="\$2\${ORIG_FUNC#\$1}"
+        eval "\$NEWNAME_FUNC"
+    }
+    
+    fox_copy_function abort ui_abort
+    
+    fox_disable_ansi() {
+        fox_copy_function ui_abort abort
+        mmm_exec("disableAnsi")
+        ESC=""
+        RED=""
+        ORANGE=""
+        YELLOW=""
+        GREEN=""
+        CYAN=""
+        BLUE=""
+        PURPLE=""
+        RESET=""
+    }
+    
+    if [ "\$ANSI_SUPPORT" == "true" ]; then
+        ESC=""
+        RED="\$ESC[91m"
+        ORANGE="\$ESC[33m"
+        YELLOW="\$ESC[93m"
+        GREEN="\$ESC[92m"
+        CYAN="\$ESC[96m"
+        BLUE="\$ESC[94m"
+        PURPLE="\$ESC[95m"
+        RESET="\$ESC[0m"
+        abort() {
+            ui_abort "\$RED\$1\$RESET"
+        }
+    else
+        fox_disable_ansi()
+    fi
+fi
+
+# Fox Library version code setter
+if [ 1 -gt "\$FOX_MODULE_LIBRARY" ]; then
+    FOX_MODULE_LIBRARY=1
+fi
+
+#########################
+# Load util_functions.sh
+#########################
+
+OUTFD=\$2
+ZIPFILE=\$3
+
+mount /data 2>/dev/null
+
+[ -f /data/adb/magisk/util_functions.sh ] || require_new_magisk
+. /data/adb/magisk/util_functions.sh
+[ \$MAGISK_VER_CODE -lt 20400 ] && require_new_magisk
+
+install_module
+exit 0
+EOF
+else
+cat <<EOF >${PWD}/build/META-INF/com/google/android/update-binary
+#!/sbin/sh
+
+#################
+# Initialization
+#################
+
+umask 022
+
+# echo before loading util_functions
+ui_print() { echo "$1"; }
+
+require_new_magisk() {
+    ui_print "*******************************"
+    ui_print " Please install Magisk v20.4+! "
+    ui_print "*******************************"
+    exit 1
+}
+
+#########################
+# Load util_functions.sh
+#########################
+
+OUTFD=$2
+ZIPFILE=$3
+
+mount /data 2>/dev/null
+
+[ -f /data/adb/magisk/util_functions.sh ] || require_new_magisk
+. /data/adb/magisk/util_functions.sh
+[ $MAGISK_VER_CODE -lt 20400 ] && require_new_magisk
+
+install_module
+exit 0
+EOF
+fi
+
 cat <<EOF >${PWD}/build/customize.sh
 #!/system/bin/sh
-
-$([ -z "$EXECUTE_ONLY_FOXMMM" ] && echo "" || echo "$EXECUTE_ONLY_FOXMMM")
 
 srcDir="\$(cd "\${0%/*}" \2\>/dev/null \|\| :\; echo "\$PWD")"
 
@@ -120,7 +264,6 @@ systemWrite() {
 getProp() {
   sed -n "s|^\$1=||p" \${2:-\$srcDir/module.prop};
 }
-
 EOF
 
 cd ./build

@@ -81,13 +81,13 @@ print() {
 }
 
 chmodBin() {
-    chmod +x $MODPATH/system/bin/$@  
+    chmod +x $MODPATH/system/bin/$@
 }
 
 systemWrite() {
     if [ $1 = true ]; then
         mount -o rw,remount /
-        print "System is now read/write"  
+        print "System is now read/write"
     elif [ $1 = false ]; then
         mount -o ro,remount /
         print "System is now read-only"
@@ -100,3 +100,7 @@ getProp() {
   sed -n "s|^$1=||p" ${2:-$srcDir/module.prop};
 }
 ```
+
+# Credits
+
+- [Fox2Code](https://github.com/Fox2Code) Fox Library V1 Script

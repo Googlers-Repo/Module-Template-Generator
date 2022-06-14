@@ -10,11 +10,83 @@ umask 022
 ui_print() { echo "$1"; }
 
 require_new_magisk() {
-  ui_print "*******************************"
-  ui_print " Please install Magisk v20.4+! "
-  ui_print "*******************************"
-  exit 1
+    ui_print "*******************************"
+    ui_print " Please install Magisk v20.4+! "
+    ui_print "*******************************"
+    exit 1
 }
+
+#########################
+# Fox Library V1 Script
+#########################
+
+if [ -n "$FOX_MODULE_LIBRARY" ]; then
+    if [ -n "$MMM_EXT_SUPPORT" ]; then
+        ui_print "#!useExt"
+        mmm_exec() {
+            ui_print "#!$@"
+        }
+        print() {
+            mmm_exec "addLine $@"
+        }
+        reprint() { mmm_exec "setLastLine $@"; }
+        clear() { mmm_exec "clearTerminal"; }
+    else
+        mmm_exec() { true; }
+        print() {
+            ui_print "$@"
+        }
+        reprint() { true; }
+        clear() { true; }
+    fi
+    showLoading() { mmm_exec "showLoading $@"; }
+    hideLoading() { mmm_exec "hideLoading"; }
+    setLoading() { mmm_exec "setLoading $@"; }
+    
+    fox_copy_function() {
+        local ORIG_FUNC=
+        local NEWNAME_FUNC="$2${ORIG_FUNC#$1}"
+        eval "$NEWNAME_FUNC"
+    }
+    
+    fox_copy_function abort ui_abort
+    
+    fox_disable_ansi() {
+        fox_copy_function ui_abort abort
+        mmm_exec("disableAnsi")
+        ESC=""
+        RED=""
+        ORANGE=""
+        YELLOW=""
+        GREEN=""
+        CYAN=""
+        BLUE=""
+        PURPLE=""
+        RESET=""
+    }
+    
+    if [ "$ANSI_SUPPORT" == "true" ]; then
+        ESC=""
+        RED="$ESC[91m"
+        ORANGE="$ESC[33m"
+        YELLOW="$ESC[93m"
+        GREEN="$ESC[92m"
+        CYAN="$ESC[96m"
+        BLUE="$ESC[94m"
+        PURPLE="$ESC[95m"
+        RESET="$ESC[0m"
+        abort() {
+            ui_abort "$RED$1$RESET"
+        }
+    else
+        fox_disable_ansi()
+    fi
+fi
+
+# Fox Library version code setter
+if [ 1 -gt "$FOX_MODULE_LIBRARY" ]; then
+    FOX_MODULE_LIBRARY=1
+fi
 
 #########################
 # Load util_functions.sh
