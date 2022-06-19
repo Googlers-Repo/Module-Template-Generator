@@ -2,7 +2,9 @@
 
 # Module-Tamplate-Generator
 
-The script generates you an simple module for Magisk.
+The script generates you an module for Magisk.   
+You should read also the [Dynamic Installer](https://forum.xda-developers.com/t/zip-dual-installer-dynamic-installer-stable-4-5-b-android-10-or-earlier.4279541/) thread
+
 
 ## Building
 
@@ -10,6 +12,7 @@ The script generates you an simple module for Magisk.
 # Run and follow the prompts
 bash build.sh
 ```
+
 
 ## module.prop
 
@@ -103,4 +106,4 @@ getProp() {
 
 # Credits
 
-- [Fox2Code](https://github.com/Fox2Code) Fox Library V1 Script
+- [BlassGo](https://forum.xda-developers.com/m/blassgo.11402469/) Dynamic Installer

@@ -1,1 +1,2 @@
 *.zip
+!build/META-INF/addons/extra.zip

@@ -1,10 +1,10 @@
 # Magisk properties
-id=test
-name=test
+id=
+name=
 version=v1.0.0
 versionCode=1
-author=test
-description=test
+author=
+description=
 # FoxMMM properties
 needRamdisk=false
 changeBoot=false
