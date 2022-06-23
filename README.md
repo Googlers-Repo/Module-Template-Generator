@@ -26,10 +26,12 @@ author=<string>
 description=<string>
 updateJson=<url>
 
+# Comment props are not supported -- Module can't installed via FoxMMM 
+
 # Fox's Mmm supported properties
-minApi=<int>
-maxApi=<int>
-minMagisk=<int>
+#* minApi=<int>
+#* maxApi=<int>
+#* minMagisk=<int>
 needRamdisk=<boolean>
 support=<url>
 donate=<url>
@@ -69,39 +71,27 @@ Note²: For `minMagisk`, `XX.Y` is parsed as `XXY00`, so you can just put the Ma
 
 ## customize.sh
 
-The `customize.sh` is planted with my most common used functions and commands
+Sample
 
 ```bash
-#!/system/bin/sh
+import_config "$MODPATH/module.prop"
+chmodBin="$addons/makeExecuteable.sh"
 
-# Configurable while the building process
-if [ -n "$MMM_EXT_SUPPORT" ]; then; ui_print "#!useExt"; mmm_exec() { ui_print "$(echo "#!$@")"; }; else; mmm_exec() { true; };abort "! This module need to be executed in Fox's Magisk Module Manager";exit 1;fi
+ui_print "--------------------------------"
+ui_print "$name                          "
+ui_print "$version                       "
+ui_print "--------------------------------"
+ui_print "by $author                     "
+ui_print "--------------------------------"
+ui_print " "
 
-srcDir="$(cd "${0%/*}" \2\>/dev/null \|\| :\; echo "$PWD")"
+# Extract test folder
+package_extract_dir "test" "$MODPATH/system/bin"
 
-print() {
-    ui_print $@
-}
+# Make test.sh execute able
+$chmodBin "$MODPATH/system/bin/test.sh"
 
-chmodBin() {
-    chmod +x $MODPATH/system/bin/$@
-}
 
-systemWrite() {
-    if [ $1 = true ]; then
-        mount -o rw,remount /
-        print "System is now read/write"
-    elif [ $1 = false ]; then
-        mount -o ro,remount /
-        print "System is now read-only"
-    else
-        print "System not writeable"
-    fi
-}
-
-getProp() {
-  sed -n "s|^$1=||p" ${2:-$srcDir/module.prop};
-}
 ```
 
 # Credits
