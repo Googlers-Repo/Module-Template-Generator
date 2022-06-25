@@ -2,17 +2,21 @@
 
 # Module-Tamplate-Generator
 
-The script generates you an module for Magisk.   
-You should read also the [Dynamic Installer](https://forum.xda-developers.com/t/zip-dual-installer-dynamic-installer-stable-4-5-b-android-10-or-earlier.4279541/) thread
+The script generates you an module for Magisk.
 
+## Suported Types
+
+- Basic Module
+- Dynamic Module ([Dynamic Installer](https://forum.xda-developers.com/t/zip-dual-installer-dynamic-installer-stable-4-5-b-android-10-or-earlier.4279541/)
+
+> Dynamic Installer Modules are not supported in FoxMMM!
 
 ## Building
 
 ```bash
-# Run and follow the prompts
+# Run and follow the prompts - New GUI
 bash build.sh
 ```
-
 
 ## module.prop
 
@@ -26,7 +30,7 @@ author=<string>
 description=<string>
 updateJson=<url>
 
-# Comment props are not supported -- Module can't installed via FoxMMM 
+# Comment props are not supported -- Module can't installed via FoxMMM
 
 # Fox's Mmm supported properties
 #* minApi=<int>
